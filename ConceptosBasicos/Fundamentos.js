@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { Const } from 'three/tsl';
+import { VarNode } from 'three/webgpu';
 
 function main(){
     const canvas = document.querySelector('#c');
@@ -24,6 +26,18 @@ function main(){
         return cubo;
     }
 
+    function resizeRendererDisplay(renderer){
+        const canvas = renderer.domElement;
+        const pixelRatio = window.devicePixelRatio;
+        const ancho = Math.floor(canvas.clientWidth * pixelRatio);
+        const alto = Math.floor(canvas.clientHeight * pixelRatio);
+        const needResize = canvas.width !== ancho || canvas.height !== ancho;
+        if(needResize){
+            renderer.setSize(ancho, alto, false);
+        }
+        return needResize;
+    }
+
     const cubos = [
         makeInstancias(geoemtry, 0x44aa88, 0),
         makeInstancias(geoemtry, 0x8844aa, -2),
@@ -32,6 +46,14 @@ function main(){
 
     function render(tiempo){
         tiempo *= 0.001;
+
+        if(resizeRendererDisplay(renderer)){
+            const canvas = renderer.domElement;
+            camara.aspect = canvas.clientWidth / canvas.clientHeight;
+            camara.updateMatrix();
+        }
+
+    
 
         cubos.forEach((cubo, ndx) => {
             const speed = 1 + ndx * .1;
