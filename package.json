@@ -4,6 +4,7 @@
     "troika-three-text": "^0.52.4"
   },
   "devDependencies": {
+    "lil-gui": "^0.20.0",
     "vite": "^7.0.4"
   }
 }
