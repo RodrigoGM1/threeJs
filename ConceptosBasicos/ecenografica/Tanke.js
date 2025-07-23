@@ -120,7 +120,7 @@ function main(){
     torretaPivot.position.y = .5;
     torretaMalla.position.z = torretaLongitud * .5;
     torretaPivot.add(torretaMalla);
-    bodyMalla.add(torretaMalla);
+    bodyMalla.add(torretaPivot);
     // Fallas
 
     const torretaCamara = makeCamara();
