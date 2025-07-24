@@ -3,13 +3,16 @@ import * as THREE from 'three';
 const ecena = new THREE.Scene();
 const camara = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 const render = new THREE.WebGLRenderer();
-// const cargar = new
+
+const cargar = new THREE.TextureLoader();
+const textura = cargar.load('texturas/wall.jpg');
+textura.colorSpace = THREE.SRGBColorSpace
 
 render.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(render.domElement);
 
 const gometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+const material = new THREE.MeshBasicMaterial({map: textura});
 const cubo = new THREE.Mesh(gometry, material);
 ecena.add(cubo);
 

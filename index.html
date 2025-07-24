@@ -14,10 +14,35 @@
             height: 100%;
             display: block;
         }
+        #cargador{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #cargador .progreso{
+            margin: 1.5em;
+            border: 1px solid white;
+            width: 50vw;
+        }
+        #cargador .progresobar{
+            margin: 2px;
+            background: white;
+            height: 1em;
+            transform-origin: top left;
+            transform: scaleX(0);
+        }
     </style>
 </head>
 <body>
     <!-- <canvas id="c"></canvas>  -->
-    <script type="module" src="/ConceptosBasicos/materiales/materiales.js"></script>
+     <div id="cargador">
+        <div class="progreso"><div class="progresobar"></div></div>
+     </div>
+    <script type="module" src="/ConceptosBasicos/materiales/MultiplesTexturas.js"></script>
 </body>
 </html>
