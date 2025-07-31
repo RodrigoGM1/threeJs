@@ -1,0 +1,225 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/Addons.js';
+import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
+
+class colorGUI {
+    constructor(objeto, prop){
+        this.objeto = objeto;
+        this.prop = prop;
+    };
+    get value(){
+        return this.objeto[this.prop].getHexString();
+    }
+    set value(hexString){
+        this.objeto[this.prop].set(hexString);
+    }
+};
+
+class camaraGUIHelper {
+    constructor(obj, minProp, maxProp, minDif){
+        this.obj = obj;
+        this.minProp = minProp;
+        this.maxProp = maxProp;
+        this.minDif = minDif;
+    }
+    get min(){
+        return this.obj[this.minProp];
+    }
+    set min(v){
+        this.obj[this.minProp] = v;
+        this.obj[this.maxProp] = Math.max(this.obj[this.maxProp], v + this.minDif);
+    }
+    get max(){
+        return this.obj[this.maxProp];
+    }
+    set max(v){
+        this.obj[this.maxProp] = v;
+        this.min = this.min;
+    }
+};
+
+function main(){
+    const canvas = document.querySelector("#c");
+
+    const vista1Elem = document.querySelector("#view1");
+    const vista2Elem = document.querySelector("#view2");
+
+    const renderer = new THREE.WebGLRenderer({antialias: true, canvas});
+    const camara = new THREE.PerspectiveCamera(45, 2, 0.1, 100);
+
+    const camara2 = new THREE.PerspectiveCamera(60, 2, 0.1, 500);
+    camara2.position.set(40, 10, 30);
+    camara2.lookAt(0, 5, 0);
+
+    const ecena = new THREE.Scene();
+
+    const camaraHelper = new THREE.CameraHelper(camara);
+    ecena.add(camaraHelper);
+
+    camara.position.set(0, 10, 20);
+
+    function updateCamara(){
+        camara.updateProjectionMatrix();
+    }
+
+    const controls = new OrbitControls(camara, vista1Elem);
+    const controls2 = new OrbitControls(camara2, vista2Elem);
+    controls.target.set(0, 5, 0);
+    controls2.target.set(0, 5, 0);
+    controls.update();
+    controls2.update();
+
+    const planoSize = 40;
+
+    const cargar = new THREE.TextureLoader();
+    const textura = cargar.load("texturas/checker.png");
+    textura.wrapS = THREE.RepeatWrapping;
+    textura.wrapT = THREE.RepeatWrapping;
+    textura.magFilter = THREE.NearestFilter;
+    textura.colorSpace = THREE.SRGBColorSpace;
+    const repetir = planoSize / 2;
+    textura.repeat.set(repetir, repetir);
+
+    const planoGeo = new THREE.PlaneGeometry(planoSize, planoSize);
+    const planoMat = new THREE.MeshPhongMaterial({map: textura, side: THREE.DoubleSide});
+    const malla = new THREE.Mesh(planoGeo, planoMat);
+    malla.rotation.x = Math.PI * - .5;
+    ecena.add(malla);
+
+    {
+        const cuboSize = 4;
+        const cuboGeo = new THREE.BoxGeometry(cuboSize, cuboSize, cuboSize);
+        const cuboMat = new THREE.MeshPhongMaterial({color: '#8AC'});
+        const malla = new THREE.Mesh(cuboGeo, cuboMat);
+        malla.position.set(cuboSize + 1, cuboSize / 2, 0);
+        ecena.add(malla);
+    }
+    {
+        const esferaRadio = 3;
+        const esferaAnchoDiv = 32;
+        const esferaAltoDiv = 16;
+        const esferaGeo = new THREE.SphereGeometry(esferaRadio, esferaAnchoDiv, esferaAltoDiv);
+        const esferaMat = new THREE.MeshPhongMaterial({color: '#CA8'});
+        const malla = new THREE.Mesh(esferaGeo, esferaMat);
+        malla.position.set(-esferaRadio - 1, esferaRadio + 2, 0);
+        ecena.add(malla);
+    }
+
+    const color = 0xFFFFFF;
+    const intencidad = 1;
+    const luz = new THREE.DirectionalLight(color, intencidad);
+    luz.position.set(0, 10, 0);
+    luz.target.position.set(-5, 0, 0);
+    ecena.add(luz);
+    ecena.add(luz.target);
+
+    const helper = new THREE.DirectionalLightHelper(luz);
+    ecena.add(helper);
+
+    updateLuz();
+
+    const gui = new GUI();
+    gui.addColor(new colorGUI(luz, 'color'), 'value').name('color');;
+    gui.add(luz, 'intensity', 0, 5, 0.01);
+    
+    makeXYZGUI(gui, luz.position, 'position', updateLuz);
+    makeXYZGUI(gui, luz.target.position, 'target', updateLuz);
+
+    gui.add(camara, 'fov', 1, 180).onChange(updateCamara);
+    const camaraGUI = new camaraGUIHelper(camara, 'near', 'far', 0.1);
+    gui.add(camaraGUI, 'min', 0.1, 50, 0.1).name('near').onChange(updateCamara);
+    gui.add(camaraGUI, 'max', 0.1, 50, 0.1).name('far').onChange(updateCamara);
+
+    function animacion() {
+        
+        // if(resizeRendererDisplay(renderer)){
+        //     const canvas = renderer.domElement;
+        //     camara.aspect = canvas.clientWidth / canvas.clientHeight;
+        //     camara.updateMatrix();
+        // }
+
+        resizeRendererDisplay(renderer);
+
+        renderer.setScissorTest(true);
+
+        {
+            const aspect = setScessorForElement(vista1Elem);
+
+            camara.aspect = aspect;
+            camara.updateProjectionMatrix();
+            camaraHelper.update();
+
+            camaraHelper.visible = false;
+
+            ecena.background.set(0x000000);
+
+            renderer.render(ecena, camara);
+        }
+
+        {
+            const aspect = setScessorForElement(vista2Elem);
+
+            camara2.aspect = aspect;
+            camara2.updateProjectionMatrix();
+
+            camaraHelper.visible = true;
+
+            ecena.background.set(0x000040);
+
+            renderer.render(ecena, camara2);
+        }
+
+        // renderer.render(ecena, camara);
+        requestAnimationFrame(animacion);
+    }
+    
+    requestAnimationFrame(animacion);
+
+
+    // Funciones 
+    function resizeRendererDisplay(renderer){
+        const canvas = renderer.domElement;
+        const pixelRatio = window.devicePixelRatio;
+        const ancho = Math.floor(canvas.clientWidth * pixelRatio);
+        const alto = Math.floor(canvas.clientHeight * pixelRatio);
+        const needResize = canvas.width !== ancho || canvas.height !== ancho;
+        if(needResize){
+            renderer.setSize(ancho, alto, false);
+        }
+        return needResize;
+    }
+
+    function makeXYZGUI(gui, vector3, name, onChangeFn){
+        const folder = gui.addFolder(name);
+        folder.add(vector3, 'x', -10, 10).onChange(onChangeFn);
+        folder.add(vector3, 'z', -10, 10).onChange(onChangeFn);
+        folder.add(vector3, 'y', 0, 10).onChange(onChangeFn);
+        folder.open();
+    }
+
+    function updateLuz(){
+        luz.target.updateMatrixWorld();
+        helper.update();
+    }
+
+    function setScessorForElement(elem){
+        const canvasRect = canvas.getBoundingClientRect();
+        const elemRect = elem.getBoundingClientRect();
+
+        const right = Math.min(elemRect.right, canvasRect.right) - canvasRect.left;
+        const left = Math.max(0, elemRect.left - canvas.left);
+        const botton = Math.min(elemRect.botton, canvasRect.top) - canvasRect.top;
+        const top = Math.max(0, elemRect.top - canvasRect.top);
+
+        const ancho = Math.min(canvasRect.width, right - left);
+        const alto = Math.min(canvasRect.height, botton - top);
+
+        const positivoBottom = canvasRect.height - botton;
+        renderer.setScissor(left, positivoBottom, ancho, alto);
+        renderer.setViewport(left, positivoBottom, ancho, alto);
+
+        return ancho / alto;
+    }
+}
+
+main();

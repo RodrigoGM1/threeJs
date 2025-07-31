@@ -38,6 +38,18 @@
             transform: scaleX(0);
         }
             */
+        .split{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+        .split>div{
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -45,6 +57,10 @@
      <!-- <div id="cargador">
         <div class="progreso"><div class="progresobar"></div></div>
      </div> -->
-    <script type="module" src="/ConceptosBasicos/luces/luzPlana.js"></script>
+     <div class="split">
+        <div id="view1" tabindex="1"></div>
+        <div id="view2" tabindex="2"></div>
+     </div>
+    <script type="module" src="/ConceptosBasicos/camaras/DosCamara.js"></script>
 </body>
 </html>
