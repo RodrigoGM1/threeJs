@@ -4,63 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        html, body{
-            margin: 0;
-            height: 100%;
-        }
-        #c{
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-        /*
-        #cargador{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #cargador .progreso{
-            margin: 1.5em;
-            border: 1px solid white;
-            width: 50vw;
-        }
-        #cargador .progresobar{
-            margin: 2px;
-            background: white;
-            height: 1em;
-            transform-origin: top left;
-            transform: scaleX(0);
-        }
-            */
-        .split{
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-        }
-        .split>div{
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-    <canvas id="c"></canvas> 
-     <!-- <div id="cargador">
-        <div class="progreso"><div class="progresobar"></div></div>
-     </div> -->
-     <div class="split">
-        <div id="view1" tabindex="1"></div>
-        <div id="view2" tabindex="2"></div>
-     </div>
-    <script type="module" src="/ConceptosBasicos/camaras/DosCamara.js"></script>
+    <canvas id="c"></canvas>
+    <!-- <div class="split">
+        <div id="vista1" tabindex="1"></div>
+        <div id="vista2" tabindex="2"></div>
+    </div> -->
+    <script type="module" src="/ConceptosBasicos/camaras/Esferas.js"></script>
 </body>
 </html>
